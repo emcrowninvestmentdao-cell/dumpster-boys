@@ -4,4 +4,5 @@ const MEMBERS = [
   { name: 'Redlight', wallet: '453RsqHmuZSiWZdHLXXwfYBzs4suCJyyC7RTCMhBBjDt' },
   { name: 'DevDad',   wallet: 'qg7pNNZq7qDQuc6Xkd1x4NvS2VM3aHtCqHEzucZxRGA' },
   { name: '$thebdizzle', wallet: 'HEJu6wvJfARRGzoQ5VPhtq7uPB73fvnrDxqwiX3QPnPK' },
+  { name: 'pi3d pip3r', wallet: '3NKFbtbUt2QKD2De9ttG5cNcoUb6u3dLcfvRRcYW5NrL' },
 ];
