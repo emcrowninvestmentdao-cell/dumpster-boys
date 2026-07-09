@@ -10,4 +10,5 @@ const MEMBERS = [
   { name: 'Micro7pigeons', wallet: '2kg4zLokSj36889VU5D1MUYZmB9T7MbHUyyVRY1VPPs5' },
   { name: 'VegasDan', wallet: 'FgH3z4mA7wqHNVgSZgjjuJjxn2HRZwXoBW8uB7A3U22J' },
   { name: 'Top Yeet', wallet: 'GT4PHbFvPLbecS95q5gn7njN7sqnnUaTr7VRXvqEMXcK' },
+  { name: 'Marcotics', wallet: 'FeVBwuaNG98v3B4zD4yM29xUCHBp7AopdwNw29sfDKQK' },
 ];
