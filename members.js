@@ -12,4 +12,6 @@ const MEMBERS = [
   { name: 'Top Yeet', wallet: 'GT4PHbFvPLbecS95q5gn7njN7sqnnUaTr7VRXvqEMXcK' },
   { name: 'Marcotics', wallet: 'FeVBwuaNG98v3B4zD4yM29xUCHBp7AopdwNw29sfDKQK' },
   { name: 'eddykoerner123', wallet: 'CtVwNDsiNeMS9v7j9QEZm3MYPbTG4LP8mCV28EARwtVY' },
+  { name: 'Stampede21589', wallet: '4Fo8qRnCM6d1RtFRz69T9MzwnGxhVkb1n4EpfC1FGuaG' },
+  { name: 'Wasted Devotion', wallet: 'CTjHWRBvoe6T7QQVYMbKbTJZyh8Di4giqHU89GJ4dqvJ' },
 ];
