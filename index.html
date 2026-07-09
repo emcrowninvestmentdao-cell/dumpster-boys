@@ -55,6 +55,38 @@
   .container {
     max-width: 1100px;
     margin: 0 auto;
+    position: relative;
+  }
+
+  .dumpstr-link {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    width: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.15), 0 4px 14px rgba(0,0,0,0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .dumpstr-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px var(--teal), 0 6px 18px rgba(0,0,0,0.5);
+  }
+
+  .dumpstr-link img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 640px) {
+    .dumpstr-link {
+      position: static;
+      width: 130px;
+      margin: 0 auto 16px;
+    }
   }
 
   .totals {
@@ -276,6 +308,9 @@
 <body>
 <div class="overlay">
   <div class="container">
+    <a class="dumpstr-link" href="https://dumpstr.party" target="_blank" rel="noopener noreferrer" title="Visit dumpstr.party">
+      <img src="dumpstr-logo.jpg" alt="DUMPSTR">
+    </a>
     <header>
       <h1>Dumpster Boys</h1>
     </header>
