@@ -133,6 +133,83 @@
     box-shadow: 0 0 18px rgba(95,251,233,0.35);
   }
 
+  .pool-progress {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 18px 22px;
+    margin-bottom: 32px;
+  }
+
+  .pool-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .pool-progress-header .title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--teal);
+  }
+
+  .pool-progress-header .value {
+    font-size: 0.85rem;
+    color: #cfd3dc;
+  }
+
+  .pool-progress-track-wrap {
+    position: relative;
+  }
+
+  .pool-progress-track {
+    position: relative;
+    height: 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+
+  .pool-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--pink), var(--teal));
+    box-shadow: 0 0 12px rgba(95,251,233,0.5);
+    transition: width 0.4s ease;
+  }
+
+  .pool-tick {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(20,21,26,0.7);
+    z-index: 2;
+  }
+
+  .pool-progress-labels {
+    position: relative;
+    height: 16px;
+    margin-top: 6px;
+  }
+
+  .pool-tick-label {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    font-size: 0.62rem;
+    color: #9aa0ad;
+    white-space: nowrap;
+  }
+
+  .pool-tick-label:last-child {
+    transform: translateX(-100%);
+  }
+
   .table-wrap {
     background: var(--card-bg);
     border: 1px solid rgba(255,255,255,0.1);
@@ -335,6 +412,34 @@
       </table>
     </div>
 
+    <div class="pool-progress">
+      <div class="pool-progress-header">
+        <span class="title">Group Capacity vs. 50M Pool Cap (10% baseline discount &rarr; 50% at cap)</span>
+        <span class="value" id="pool-progress-value">&mdash;</span>
+      </div>
+      <div class="pool-progress-track-wrap">
+        <div class="pool-progress-track">
+          <div class="pool-progress-fill" id="pool-progress-fill" style="width: 0%"></div>
+          <div id="pool-progress-ticks"></div>
+        </div>
+        <div class="pool-progress-labels" id="pool-progress-labels"></div>
+      </div>
+    </div>
+
+    <div class="pool-progress">
+      <div class="pool-progress-header">
+        <span class="title">Group Staked Amount vs. 50M Pool Cap &mdash; the actual metric once staking is live</span>
+        <span class="value" id="staked-progress-value">&mdash;</span>
+      </div>
+      <div class="pool-progress-track-wrap">
+        <div class="pool-progress-track">
+          <div class="pool-progress-fill" id="staked-progress-fill" style="width: 0%"></div>
+          <div id="staked-progress-ticks"></div>
+        </div>
+        <div class="pool-progress-labels" id="staked-progress-labels"></div>
+      </div>
+    </div>
+
     <div class="token-section">
       <h2>$DUMPSTR Price</h2>
       <p class="hint" id="token-hint">Token hasn't launched yet &mdash; this section lights up once the contract address is live.</p>
@@ -366,6 +471,13 @@ const TIER_META = {
   legendary: { label: 'Dumpster',  image: 'https://api.dumpstr.party/images/legendary.png' },
 };
 const TIER_ORDER = ['silver', 'gold', 'diamond', 'legendary'];
+const POOL_CAP = 50000000; // DUMPSTR game plan: max staked capacity per pool
+const POOL_DISCOUNT_TIERS = [
+  { tokens: 20000000, label: '20% @ 20M' },
+  { tokens: 30000000, label: '30% @ 30M' },
+  { tokens: 40000000, label: '40% @ 40M' },
+  { tokens: 50000000, label: '50% @ 50M' },
+];
 
 function nftHoldingsHTML(counts) {
   const owned = TIER_ORDER.filter(t => (counts[t] || 0) > 0);
@@ -449,6 +561,23 @@ function totalsHTML(allData) {
   }).join('');
 }
 
+function renderPoolBar(prefix, amount, known) {
+  const pct = Math.min(100, (amount / POOL_CAP) * 100);
+  document.getElementById(`${prefix}-fill`).style.width = `${known ? pct : 0}%`;
+  document.getElementById(`${prefix}-value`).textContent = known
+    ? `${formatNumber(amount)} / ${formatNumber(POOL_CAP)} DUMPSTR (${pct.toFixed(1)}%)`
+    : 'Pending launch';
+
+  document.getElementById(`${prefix}-ticks`).innerHTML = POOL_DISCOUNT_TIERS.map(tier => {
+    const tierPct = (tier.tokens / POOL_CAP) * 100;
+    return `<div class="pool-tick" style="left: ${tierPct}%"></div>`;
+  }).join('');
+  document.getElementById(`${prefix}-labels`).innerHTML = POOL_DISCOUNT_TIERS.map(tier => {
+    const tierPct = (tier.tokens / POOL_CAP) * 100;
+    return `<span class="pool-tick-label" style="left: ${tierPct}%">${tier.label}</span>`;
+  }).join('');
+}
+
 async function load() {
   const wallets = MEMBERS.map(m => m.wallet).join(',');
   const tableBody = document.getElementById('table-body');
@@ -467,6 +596,13 @@ async function load() {
     const sortedMembers = [...MEMBERS].sort(
       (a, b) => (data[a.wallet]?.maxCapacity || 0) - (data[b.wallet]?.maxCapacity || 0)
     );
+
+    const groupCapacity = Object.values(data).reduce((sum, d) => sum + (d?.maxCapacity || 0), 0);
+    renderPoolBar('pool-progress', groupCapacity, true);
+
+    const stakedEntries = Object.values(data).filter(d => d?.actualNftHoldings != null);
+    const groupStaked = stakedEntries.reduce((sum, d) => sum + d.actualNftHoldings, 0);
+    renderPoolBar('staked-progress', groupStaked, stakedEntries.length > 0);
 
     totalsEl.innerHTML = totalsHTML(data);
     tableBody.innerHTML = sortedMembers.map(m => rowHTML(m, data[m.wallet])).join('');
