@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dumpster Boys</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #5ffbe9;
+    --pink: #ff8fd6;
+    --ink: #14151a;
+    --card-bg: rgba(15, 16, 22, 0.78);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #fff;
+    background-image: url('background.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: #ffb6ec;
+  }
+
+  .overlay {
+    min-height: 100vh;
+    background: linear-gradient(180deg, rgba(20,10,20,0.55) 0%, rgba(10,8,16,0.75) 100%);
+    padding: 32px 16px 60px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  h1 {
+    font-family: 'Orbitron', 'Segoe UI', system-ui, sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    margin: 0;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 0 0 12px var(--teal), 0 0 28px rgba(95,251,233,0.5), 3px 3px 0 #000;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .totals {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+
+  .tier-chip {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 140px;
+  }
+
+  .tier-chip img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+  }
+
+  .tier-chip .chip-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #cfd3dc;
+  }
+
+  .tier-chip .chip-count {
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .tier-chip.legendary {
+    border-color: var(--teal);
+    box-shadow: 0 0 18px rgba(95,251,233,0.35);
+  }
+
+  .table-wrap {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 8px;
+    overflow-x: auto;
+    margin-bottom: 32px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 720px;
+  }
+
+  thead th {
+    text-align: left;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--teal);
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr.has-dumpster {
+    background: rgba(95,251,233,0.06);
+  }
+
+  tfoot td {
+    padding: 14px 16px;
+    border-top: 2px solid rgba(95,251,233,0.4);
+    font-weight: 700;
+  }
+
+  tfoot .row-name {
+    color: var(--teal);
+  }
+
+  .row-name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  .dumpster-badge {
+    font-size: 0.62rem;
+    background: var(--teal);
+    color: #06201d;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .nft-holdings {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tier-icon {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .tier-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  .tier-icon .count-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--pink);
+    color: #2a0620;
+    font-size: 0.62rem;
+    font-weight: 800;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    box-shadow: 0 0 0 2px var(--ink);
+  }
+
+  .tier-icon.legendary .count-badge {
+    background: var(--teal);
+  }
+
+  .muted {
+    color: #8a8f9c;
+  }
+
+  .cap-value {
+    font-weight: 700;
+  }
+
+  .token-section {
+    background: rgba(15, 16, 22, 0.6);
+    border: 1px dashed rgba(255,255,255,0.25);
+    border-radius: 18px;
+    padding: 28px;
+    text-align: center;
+  }
+
+  .token-section h2 {
+    margin: 0 0 6px;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--teal);
+    text-shadow: 1px 1px 2px #000;
+  }
+
+  .token-section p.hint {
+    margin: 0 0 20px;
+    color: #b7bcc7;
+    font-size: 0.85rem;
+  }
+
+  .token-stats {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .token-stat .value {
+    font-size: 1.8rem;
+    font-weight: 800;
+  }
+
+  .token-stat .label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #9aa0ad;
+    margin-top: 2px;
+  }
+
+  .status {
+    text-align: center;
+    color: #cfd3dc;
+    padding: 40px 0;
+  }
+</style>
+</head>
+<body>
+<div class="overlay">
+  <div class="container">
+    <header>
+      <h1>Dumpster Boys</h1>
+    </header>
+
+    <div id="totals" class="totals"></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Holder</th>
+            <th>NFT Holdings</th>
+            <th>Max Staking Capacity</th>
+            <th>Actual NFT Holdings</th>
+            <th>Actual Token Holdings</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr><td colspan="5"><div class="status">Loading holdings&hellip;</div></td></tr>
+        </tbody>
+        <tfoot id="table-foot"></tfoot>
+      </table>
+    </div>
+
+    <div class="token-section">
+      <h2>$DUMPSTR Price</h2>
+      <p class="hint" id="token-hint">Token hasn't launched yet &mdash; this section lights up once the contract address is live.</p>
+      <div class="token-stats">
+        <div class="token-stat">
+          <div class="value" id="token-price">&mdash;</div>
+          <div class="label">Price</div>
+        </div>
+        <div class="token-stat">
+          <div class="value" id="token-mcap">&mdash;</div>
+          <div class="label">Market Cap</div>
+        </div>
+        <div class="token-stat">
+          <div class="value" id="token-group-value">&mdash;</div>
+          <div class="label">Group Holdings Value</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="members.js"></script>
+<script>
+const TIER_META = {
+  silver:    { label: 'Silver',    image: 'https://api.dumpstr.party/images/silver.png' },
+  gold:      { label: 'Gold',      image: 'https://api.dumpstr.party/images/gold.png' },
+  diamond:   { label: 'Diamond',   image: 'https://api.dumpstr.party/images/diamond.png' },
+  legendary: { label: 'Dumpster',  image: 'https://api.dumpstr.party/images/legendary.png' },
+};
+const TIER_ORDER = ['silver', 'gold', 'diamond', 'legendary'];
+
+function nftHoldingsHTML(counts) {
+  const owned = TIER_ORDER.filter(t => (counts[t] || 0) > 0);
+  if (!owned.length) return '<span class="muted">&mdash;</span>';
+  return `<div class="nft-holdings">${owned.map(t => {
+    const meta = TIER_META[t];
+    const legendaryClass = t === 'legendary' ? ' legendary' : '';
+    return `
+      <div class="tier-icon${legendaryClass}" title="${meta.label}">
+        <img src="${meta.image}" alt="${meta.label}" loading="lazy">
+        <span class="count-badge">${counts[t]}</span>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+function formatNumber(n) {
+  return n == null ? null : Math.round(n).toLocaleString();
+}
+
+function rowHTML(member, data) {
+  const counts = data?.counts || { silver: 0, gold: 0, diamond: 0, legendary: 0 };
+  const hasDumpster = counts.legendary > 0;
+  const cap = formatNumber(data?.maxCapacity);
+  const actualNft = data?.actualNftHoldings != null ? formatNumber(data.actualNftHoldings) : null;
+  const tokenBal = data?.tokenBalance != null ? formatNumber(data.tokenBalance) : null;
+
+  return `
+    <tr class="${hasDumpster ? 'has-dumpster' : ''}">
+      <td>
+        <div class="row-name">
+          ${member.name}
+          ${hasDumpster ? '<span class="dumpster-badge">Holds the Dumpster</span>' : ''}
+        </div>
+      </td>
+      <td>${nftHoldingsHTML(counts)}</td>
+      <td>${cap ? `<span class="cap-value">${cap}</span> DUMPSTR` : '<span class="muted">&mdash;</span>'}</td>
+      <td>${actualNft != null ? actualNft : '<span class="muted">Pending launch</span>'}</td>
+      <td>${tokenBal != null ? `${tokenBal} DUMPSTR` : '<span class="muted">Pending launch</span>'}</td>
+    </tr>`;
+}
+
+function totalRowHTML(allData) {
+  const grand = { silver: 0, gold: 0, diamond: 0, legendary: 0 };
+  let maxCapacity = 0, actualNft = 0, actualNftKnown = false, tokenBalance = 0, tokenKnown = false;
+
+  for (const data of Object.values(allData)) {
+    const c = data?.counts || {};
+    TIER_ORDER.forEach(t => grand[t] += (c[t] || 0));
+    maxCapacity += data?.maxCapacity || 0;
+    if (data?.actualNftHoldings != null) { actualNft += data.actualNftHoldings; actualNftKnown = true; }
+    if (data?.tokenBalance != null) { tokenBalance += data.tokenBalance; tokenKnown = true; }
+  }
+
+  return `
+    <tr>
+      <td><div class="row-name">Group Total</div></td>
+      <td>${nftHoldingsHTML(grand)}</td>
+      <td><span class="cap-value">${formatNumber(maxCapacity)}</span> DUMPSTR</td>
+      <td>${actualNftKnown ? `${formatNumber(actualNft)}` : '<span class="muted">Pending launch</span>'}</td>
+      <td>${tokenKnown ? `${formatNumber(tokenBalance)} DUMPSTR` : '<span class="muted">Pending launch</span>'}</td>
+    </tr>`;
+}
+
+function totalsHTML(allData) {
+  const grand = { silver: 0, gold: 0, diamond: 0, legendary: 0 };
+  for (const data of Object.values(allData)) {
+    const c = data?.counts || {};
+    TIER_ORDER.forEach(t => grand[t] += (c[t] || 0));
+  }
+  return TIER_ORDER.map(t => {
+    const meta = TIER_META[t];
+    const legendaryClass = t === 'legendary' ? ' legendary' : '';
+    return `
+      <div class="tier-chip${legendaryClass}">
+        <img src="${meta.image}" alt="${meta.label}">
+        <div>
+          <div class="chip-count">${grand[t]}</div>
+          <div class="chip-label">${meta.label}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function load() {
+  const wallets = MEMBERS.map(m => m.wallet).join(',');
+  const tableBody = document.getElementById('table-body');
+  const tableFoot = document.getElementById('table-foot');
+  const totalsEl  = document.getElementById('totals');
+
+  if (CONFIG.TOKEN_MINT) {
+    document.getElementById('token-hint').textContent = 'Live once trading data is available.';
+  }
+
+  try {
+    const res = await fetch(`/api/holdings?wallets=${wallets}`);
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    const data = await res.json();
+
+    totalsEl.innerHTML = totalsHTML(data);
+    tableBody.innerHTML = MEMBERS.map(m => rowHTML(m, data[m.wallet])).join('');
+    tableFoot.innerHTML = totalRowHTML(data);
+  } catch (e) {
+    tableBody.innerHTML = `<tr><td colspan="5"><div class="status">Couldn't load holdings: ${e.message}</div></td></tr>`;
+  }
+}
+
+load();
+</script>
+</body>
+</html>
