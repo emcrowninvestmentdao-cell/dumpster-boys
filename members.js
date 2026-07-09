@@ -14,4 +14,5 @@ const MEMBERS = [
   { name: 'eddykoerner123', wallet: 'CtVwNDsiNeMS9v7j9QEZm3MYPbTG4LP8mCV28EARwtVY' },
   { name: 'Stampede21589', wallet: '4Fo8qRnCM6d1RtFRz69T9MzwnGxhVkb1n4EpfC1FGuaG' },
   { name: 'Wasted Devotion', wallet: 'CTjHWRBvoe6T7QQVYMbKbTJZyh8Di4giqHU89GJ4dqvJ' },
+  { name: 'AndyB', wallet: '8WoR9GReaCTgbS8omDdKn4U26a9fzpPyjFo6eZTMtYuQ' },
 ];
