@@ -464,8 +464,12 @@ async function load() {
     if (!res.ok) throw new Error(`API error ${res.status}`);
     const data = await res.json();
 
+    const sortedMembers = [...MEMBERS].sort(
+      (a, b) => (data[a.wallet]?.maxCapacity || 0) - (data[b.wallet]?.maxCapacity || 0)
+    );
+
     totalsEl.innerHTML = totalsHTML(data);
-    tableBody.innerHTML = MEMBERS.map(m => rowHTML(m, data[m.wallet])).join('');
+    tableBody.innerHTML = sortedMembers.map(m => rowHTML(m, data[m.wallet])).join('');
     tableFoot.innerHTML = totalRowHTML(data);
   } catch (e) {
     tableBody.innerHTML = `<tr><td colspan="5"><div class="status">Couldn't load holdings: ${e.message}</div></td></tr>`;
