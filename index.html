@@ -578,15 +578,39 @@ function renderPoolBar(prefix, amount, known) {
   }).join('');
 }
 
+async function fetchTokenStats(groupTokenHoldings) {
+  const hintEl  = document.getElementById('token-hint');
+  const priceEl = document.getElementById('token-price');
+  const mcapEl  = document.getElementById('token-mcap');
+  const valueEl = document.getElementById('token-group-value');
+
+  try {
+    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${CONFIG.TOKEN_MINT}`);
+    if (!res.ok) throw new Error(`Dexscreener error ${res.status}`);
+    const data = await res.json();
+    const pairs = (data.pairs || []).filter(p => p.chainId === 'solana');
+    if (!pairs.length) throw new Error('No trading pairs found yet');
+
+    const best = pairs.sort((a, b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0))[0];
+    const price = parseFloat(best.priceUsd);
+    const mcap  = best.marketCap || best.fdv;
+
+    priceEl.textContent = `$${price.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 8 })}`;
+    mcapEl.textContent   = `$${formatNumber(mcap)}`;
+    valueEl.textContent  = groupTokenHoldings != null
+      ? `$${(groupTokenHoldings * price).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+      : '&mdash;';
+    hintEl.textContent = `Live via Dexscreener (${best.dexId}).`;
+  } catch (e) {
+    hintEl.textContent = `Token is live but trading data isn't available yet: ${e.message}`;
+  }
+}
+
 async function load() {
   const wallets = MEMBERS.map(m => m.wallet).join(',');
   const tableBody = document.getElementById('table-body');
   const tableFoot = document.getElementById('table-foot');
   const totalsEl  = document.getElementById('totals');
-
-  if (CONFIG.TOKEN_MINT) {
-    document.getElementById('token-hint').textContent = 'Live once trading data is available.';
-  }
 
   try {
     const res = await fetch(`/api/holdings?wallets=${wallets}`);
@@ -607,6 +631,14 @@ async function load() {
     totalsEl.innerHTML = totalsHTML(data);
     tableBody.innerHTML = sortedMembers.map(m => rowHTML(m, data[m.wallet])).join('');
     tableFoot.innerHTML = totalRowHTML(data);
+
+    if (CONFIG.TOKEN_MINT) {
+      const tokenEntries = Object.values(data).filter(d => d?.tokenBalance != null);
+      const groupTokenHoldings = tokenEntries.length
+        ? tokenEntries.reduce((sum, d) => sum + d.tokenBalance, 0)
+        : null;
+      fetchTokenStats(groupTokenHoldings);
+    }
   } catch (e) {
     tableBody.innerHTML = `<tr><td colspan="5"><div class="status">Couldn't load holdings: ${e.message}</div></td></tr>`;
   }
